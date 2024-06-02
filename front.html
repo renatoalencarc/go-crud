@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User API</title>
+</head>
+<body>
+    <h1>User Management</h1>
+    <div>
+        <h2>Create User</h2>
+        <form id="createUserForm">
+            <label for="userId">ID:</label>
+            <input type="text" id="userId" name="userId" required>
+            <br>
+            <label for="userName">Name:</label>
+            <input type="text" id="userName" name="userName" required>
+            <br>
+            <label for="userDescription">Description:</label>
+            <input type="text" id="userDescription" name="userDescription" required>
+            <br>
+            <button type="submit">Create User</button>
+        </form>
+    </div>
+    <div>
+        <h2>Delete User</h2>
+        <form id="deleteUserForm">
+            <label for="deleteUserId">ID:</label>
+            <input type="text" id="deleteUserId" name="deleteUserId" required>
+            <br>
+            <button type="submit">Delete User</button>
+        </form>
+    </div>
+    <div>
+        <h2>List Users</h2>
+        <button id="listUsersButton">List Users</button>
+        <ul id="userList"></ul>
+    </div>
+    <script src="api/main.js"></script>
+</body>
+</html>
