@@ -2,40 +2,82 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User API</title>
+    <title>User Management</title>
 </head>
 <body>
     <h1>User Management</h1>
-    <div>
-        <h2>Create User</h2>
-        <form id="createUserForm">
-            <label for="userId">ID:</label>
-            <input type="text" id="userId" name="userId" required>
-            <br>
-            <label for="userName">Name:</label>
-            <input type="text" id="userName" name="userName" required>
-            <br>
-            <label for="userDescription">Description:</label>
-            <input type="text" id="userDescription" name="userDescription" required>
-            <br>
-            <button type="submit">Create User</button>
-        </form>
-    </div>
-    <div>
-        <h2>Delete User</h2>
-        <form id="deleteUserForm">
-            <label for="deleteUserId">ID:</label>
-            <input type="text" id="deleteUserId" name="deleteUserId" required>
-            <br>
-            <button type="submit">Delete User</button>
-        </form>
-    </div>
-    <div>
-        <h2>List Users</h2>
-        <button id="listUsersButton">List Users</button>
-        <ul id="userList"></ul>
-    </div>
-    <script src="api/main.js"></script>
+
+    <h2>Create User</h2>
+    <form id="create-user-form">
+        <input type="text" id="user-name" placeholder="Name" required>
+        <input type="text" id="user-description" placeholder="Description">
+        <button type="submit">Create User</button>
+    </form>
+
+    <h2>Delete User</h2>
+    <form id="delete-user-form">
+        <input type="text" id="delete-user-name" placeholder="Name" required>
+        <button type="submit">Delete User</button>
+    </form>
+
+    <h2>Update Description</h2>
+    <form id="update-description-form">
+        <input type="text" id="update-user-name" placeholder="Name" required>
+        <input type="text" id="update-user-description" placeholder="New Description" required>
+        <button type="submit">Update Description</button>
+    </form>
+
+    <script>
+        document.getElementById('create-user-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const name = document.getElementById('user-name').value;
+            const description = document.getElementById('user-description').value;
+
+            fetch('http://localhost:8080/users', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, description })
+            }).then(response => {
+                if (response.status === 201) {
+                    alert('User created successfully');
+                } else {
+                    alert('Error creating user');
+                }
+            });
+        });
+
+        document.getElementById('delete-user-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const name = document.getElementById('delete-user-name').value;
+
+            fetch(`http://localhost:8080/users/${name}`, {
+                method: 'DELETE'
+            }).then(response => {
+                if (response.status === 204) {
+                    alert('User deleted successfully');
+                } else {
+                    alert('Error deleting user');
+                }
+            });
+        });
+
+        document.getElementById('update-description-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const name = document.getElementById('update-user-name').value;
+            const description = document.getElementById('update-user-description').value;
+
+            fetch(`http://localhost:8080/users/${name}/description`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ description })
+            }).then(response => {
+                if (response.status === 200) {
+                    alert('Description updated successfully');
+                } else {
+                    alert('Error updating description');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
