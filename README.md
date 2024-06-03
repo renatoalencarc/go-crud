@@ -1,15 +1,16 @@
-#Simple CRUD API using Golang
+# Simple CRUD API using Golang
 
-#Resources used:
+# Resources used:
 
-```-Golang
+```
+-Golang
 -gorilla/mux
 -felixge/httpsnoop
 -gorilla/handlers
 -rs/cors (for localhost errors)
 ```
 
-#Get started
+# Get started
 
 Install the [Golang](https://go.dev/dl/) and get the project. In your VSCode run the frontend server and backend server with [go run server.go] and [go run main.go].
 
