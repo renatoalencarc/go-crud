@@ -5,6 +5,7 @@ import (
 	"net/http"
 )
 
+// Frontend server to serve the frontend files
 func main() {
 	fs := http.FileServer(http.Dir("../"))
 	http.Handle("/", fs)

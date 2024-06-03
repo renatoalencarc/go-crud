@@ -3,19 +3,11 @@ package api
 import (
 	"encoding/json"
 	"net/http"
-	"sync"
 
 	"github.com/gorilla/mux"
 )
 
-type User struct {
-	Name        string `json:"name"`
-	Description string `json:"description,omitempty"`
-}
-
-var users = make(map[string]User)
-var mu sync.Mutex
-
+// User struct to hold the user data
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	var user User
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
@@ -24,19 +16,33 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	mu.Lock()
-	users[user.Name] = user
+	users[user.Name] = user.Description
 	mu.Unlock()
 
 	w.WriteHeader(http.StatusCreated)
 }
 
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	name := vars["name"]
+	name := mux.Vars(r)["name"]
 
 	mu.Lock()
-	delete(users, name)
-	mu.Unlock()
+	if _, exists := users[name]; exists {
+		delete(users, name)
+		mu.Unlock()
+		w.WriteHeader(http.StatusNoContent)
+	} else {
+		mu.Unlock()
+		http.Error(w, "User not found", http.StatusNotFound)
+	}
+}
 
-	w.WriteHeader(http.StatusNoContent)
+func ListUsers(w http.ResponseWriter, r *http.Request) {
+	mu.Lock()
+	defer mu.Unlock()
+
+	var userList []User
+	for name, description := range users {
+		userList = append(userList, User{Name: name, Description: description})
+	}
+	json.NewEncoder(w).Encode(userList)
 }

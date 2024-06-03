@@ -3,52 +3,58 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"sync"
 
 	"github.com/gorilla/mux"
 )
 
-func CreateDescription(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	name := vars["name"]
+// User struct to hold the user data
+var (
+	users = make(map[string]string)
+	mu    sync.Mutex
+)
 
-	var description struct {
-		Description string `json:"description"`
-	}
-	if err := json.NewDecoder(r.Body).Decode(&description); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	mu.Lock()
-	if user, exists := users[name]; exists {
-		user.Description = description.Description
-		users[name] = user
-		w.WriteHeader(http.StatusCreated)
-	} else {
-		http.Error(w, "User not found", http.StatusNotFound)
-	}
-	mu.Unlock()
+type User struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
 }
 
-func UpdateDescription(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	name := vars["name"]
-
-	var description struct {
+func CreateDescription(w http.ResponseWriter, r *http.Request) {
+	var desc struct {
 		Description string `json:"description"`
 	}
-	if err := json.NewDecoder(r.Body).Decode(&description); err != nil {
+	name := mux.Vars(r)["name"]
+	if err := json.NewDecoder(r.Body).Decode(&desc); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	mu.Lock()
-	if user, exists := users[name]; exists {
-		user.Description = description.Description
-		users[name] = user
+	defer mu.Unlock()
+	if _, exists := users[name]; exists {
+		users[name] = desc.Description
 		w.WriteHeader(http.StatusOK)
 	} else {
 		http.Error(w, "User not found", http.StatusNotFound)
 	}
-	mu.Unlock()
+}
+
+func UpdateDescription(w http.ResponseWriter, r *http.Request) {
+	var desc struct {
+		Description string `json:"description"`
+	}
+	name := mux.Vars(r)["name"]
+	if err := json.NewDecoder(r.Body).Decode(&desc); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	mu.Lock()
+	defer mu.Unlock()
+	if _, exists := users[name]; exists {
+		users[name] = desc.Description
+		w.WriteHeader(http.StatusOK)
+	} else {
+		http.Error(w, "User not found", http.StatusNotFound)
+	}
 }
